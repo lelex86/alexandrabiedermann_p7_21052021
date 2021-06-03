@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Voici votre panier." />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="favicon.ico/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="favicon.ico/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="favicon.ico/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="favicon.ico/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="favicon.ico/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="favicon.ico/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="favicon.ico/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="favicon.ico/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="favicon.ico/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="favicon.ico/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="favicon.ico/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="favicon.ico/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="favicon.ico/favicon-16x16.png"
+    />
+    <link rel="manifest" href="favicon.ico/manifest.json" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta
+      name="msapplication-TileImage"
+      content="favicon.ico/ms-icon-144x144.png"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style.min.css" />
+    <script
+      src="https://kit.fontawesome.com/8062eaba09.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>Votre panier</title>
+  </head>
+  <body>
+    <header class="flex-center">
+      <a href="index.html"><img src="/img/orinoco.jpg" alt="logo Orinoco" /></a>
+    </header>
+    <h1>Votre Panier</h1>
+
+    <main id="container" class="basket">
+      <section id="listProductBought"></section>
+      <section id="form">
+        <h2>Merci de renseigner vos informations</h2>
+
+        <form
+          id="formulaire"
+          name="contact"
+          onsubmit="Controller.sendOrder(this); return false;"
+        >
+          <label for="lastName">Nom:</label>
+          <input
+            type="text"
+            name="lastName"
+            pattern="[A-ZÀ-ÿa-z\s-]{2,100}"
+            placeholder="Nom"
+            required
+          /><br /><br />
+
+          <label for="firstName">Prénom:</label>
+          <input
+            type="text"
+            name="firstName"
+            pattern="[A-ZÀ-ÿa-z\s-]{2,100}"
+            placeholder="Prénom"
+            required
+          /><br /><br />
+
+          <label for="address">Adresse:</label>
+          <input
+            type="text"
+            name="address"
+            pattern="[A-Za-zÀ-ÿ0-9\s-]{2,300}"
+            placeholder="Adresse"
+            required
+          /><br /><br />
+
+          <label for="city">Ville:</label>
+          <input
+            type="text"
+            name="city"
+            pattern="[A-Za-zÀ-ÿ0-9\s-]{1,300}"
+            placeholder="Ville"
+            required
+          /><br /><br />
+
+          <label for="email">e-mail</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}"
+            placeholder="e-mail"
+            required
+          />
+
+          <button type="submit" name="submit">Envoyer</button>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <p>Mentions légales</p>
+      <p>©Orinoco</p>
+    </footer>
+    <script src="./js/Model.js"></script>
+    <script src="./js/View.js" type="text/javascript"></script>
+    <script src="./js/Controller.js" type="text/javascript"></script>
+    <script>
+      let controller = new Controller();
+      controller.showPanier();
+    </script>
+  </body>
+</html>
