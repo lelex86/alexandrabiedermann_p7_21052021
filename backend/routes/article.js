@@ -7,11 +7,11 @@ const limit = require("../middleware/limit");
 
 const articleCtrl = require("../controllers/article");
 
-router.get("/", auth, limit.apiLimiter, articleCtrl.getAllArticle);
+router.get("/", auth, limit.apiLimiter, articleCtrl.getAll);
 router.post("/", auth, limit.apiLimiter, multer, articleCtrl.createArticle);
-router.get("/:id", auth, limit.apiLimiter, articleCtrl.getOneArticle);
+router.get("/:id", auth, limit.apiLimiter, articleCtrl.getOne);
+router.get("/user/:id", auth, limit.apiLimiter, articleCtrl.getByAuthor);
 router.put("/:id", auth, limit.apiLimiter, multer, articleCtrl.modifyArticle);
 router.delete("/:id", auth, limit.apiLimiter, articleCtrl.deleteArticle);
-router.post("/:id/like", auth, limit.apiLimiter, articleCtrl.likeArticle);
 
 module.exports = router;

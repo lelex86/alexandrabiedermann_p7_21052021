@@ -4,9 +4,12 @@ const mysql = require('mysql2');
 // create the connection to database
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'user',
-  password: process.env.DB_PWD,
-  database: 'groupomania'
+  user: 'root',
+  //password: process.env.DB_PWD,
+  password: 'root',
+  port: 3306,
+  database: 'groupomania',
+  socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect((err) => {

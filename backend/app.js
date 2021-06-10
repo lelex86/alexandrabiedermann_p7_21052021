@@ -1,7 +1,8 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const saucesRoutes = require("./routes/sauces");
+const articleRoutes = require("./routes/article");
 const userRoutes = require("./routes/user");
+const likeRoutes = require("./routes/like");
+const commentRoutes = require("./routes/comment");
 const dotenv = require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
@@ -31,7 +32,9 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(express.json());
 app.use(sanitizeReqBody);
 app.use("/images", express.static(path.join(__dirname, "images")));
-app.use("/api/articles", saucesRoutes);
+app.use("/api/articles", articleRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/like", likeRoutes);
+app.use("/api/comment", commentRoutes);
 
 module.exports = app;

@@ -1,34 +1,116 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-var CryptoJS = require("crypto-js");
-const User = require("../models/user");
+const db = require("../config/db");
+
+
 
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
-      const user = new User ({
-        username: req.body.username,
-        userfirstname: req.body.userfirstname,
-        email: CryptoJS.HmacSHA256(
-          req.body.email,
-          process.env.EMAIL
-        ).toString(),
-        emailAES: CryptoJS.AES.encrypt(
-          req.body.email,
-          process.env.EMAIL
-        ).toString(),
-        password: hash,
-      });
-      let sql = `INSERT INTO users SET ?`;
-      let query = User.db.query(sql, user, (err, results) => {
-          if(err) {
-              res.status(400).send(err);
-          } else {
-              res.status(200).json(results);
-          };
+      req.body.password = hash;
+      User.create(req.body, (err, results) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.status(201).json(results);
+        };
       });
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => res.status(500).json({
+      error
+    }));
 };
+
+exports.login = (req, res, next) => {
+  User.searchByMail(req.body.email, (err, results) => {
+    console.log("user:", results );
+    if (req.body.email != results[0].email) {
+        console.log("user non trouvé")
+        return res.status(401).json({ error: "Utilisateur non trouvé !" });
+      } else {
+          bcrypt
+            .compare(req.body.password, results[0].password)
+            .then((valid) => {
+              if (!valid) {
+                console.log("Mot de passe non valable!")
+                return res.status(401).json({ error: "Mot de passe incorrect !" });
+              } else {
+                console.log("connexion réussie!")
+              res.status(200).json({
+                userId: results[0].user_id,
+                token: jwt.sign({ userId: results[0].user_id }, process.env.TOKEN_KEY, {
+                  expiresIn: "24h",
+                }),
+              });}
+            })
+            .catch((error) => res.status(500).json({ error }));
+    }
+  });
+};
+
+exports.modify = (req, res, next) => {
+  if (req.body.password) {
+    bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => {
+      req.body.password = hash;
+      User.searchById(req.params.id, (err, results) => {
+        if (err){
+          console.log("erreur", err);
+        } else {
+          const user = results[0];
+          console.log("Utilistaeur", user);
+          const newUser= {...user, password: req.body.password, user_id: req.params.id};
+          console.log("nouvel user:", newUser);
+          User.update(newUser, (err, results) => {
+            if (err) {
+              res.status(400).send(err);
+            } else {
+              res.status(200).json(results);
+            };
+          });
+        }
+    });
+    })
+    .catch((error) => res.status(500).json({
+      error
+    }));
+  }
+};
+
+exports.delete = (req, res, next) => {
+  User.searchById(req.params.id, (err, results) => {
+    user_id=req.params.id;
+    console.log("id",user_id);
+    User.delete(user_id, (err, results) => {
+      if (err) {
+        res.status(400).send(err);
+      } else {
+        res.status(200).json(results);
+      };
+    });
+
+  });
+};
+
+exports.getOne = (req,res,next) => {
+  User.searchById(req.params.id, (err, results) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      res.status(200).json(results);
+    };
+  });
+}
+
+exports.getAll = (req,res,next) => {
+  User.searchAll((err, results) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      res.status(200).json(results);
+    };
+  });
+}

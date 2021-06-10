@@ -25,12 +25,12 @@ class Model {
   }
 
   // Nouvelle classe pour réaliser notre POST
-  static post(url, order) {
+  static post(url, user) {
     return new Promise(function (resolve, reject) {
       let request = new XMLHttpRequest();
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
-          if (request.status === 201) {
+          if (request.status === 201 ||request.status === 200 ) {
             resolve(request.responseText);
           } else {
             reject(request);
@@ -39,7 +39,7 @@ class Model {
       };
       request.open("POST", url);
       request.setRequestHeader("Content-Type", "application/json");
-      request.send(order);
+      request.send(user);
     });
   }
 }
