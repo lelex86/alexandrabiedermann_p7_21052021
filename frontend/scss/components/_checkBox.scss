@@ -1,0 +1,46 @@
+.customBoxContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    .custom-box {
+        position: relative;
+        z-index: 9999;
+        border: 2px solid grey;
+        text-align: center;
+        padding: 10px;
+        width: 40%;
+        background-color: white;
+        margin: auto;
+        #close{
+            position:absolute;
+            top: 0;
+            right: 0;
+            width: fit-content;
+            cursor: pointer;
+        }
+
+        div {
+            margin-top: 10%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #formulaire{
+            flex-direction: row;
+            label{
+                width: 20%;
+            }
+            input{
+                width: 50%;
+            }
+            button{
+                width: 15%;
+            }
+        }
+    }
+}

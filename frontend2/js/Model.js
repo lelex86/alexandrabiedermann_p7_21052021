@@ -20,7 +20,6 @@ class Model {
         }
       };
       request.open("GET", url, true);
-      request.setRequestHeader("Authorization", "Bearer "+ localStorage.getItem("userToken"));
       request.send();
     });
   }
@@ -41,25 +40,6 @@ class Model {
       request.open("POST", url);
       request.setRequestHeader("Content-Type", "application/json");
       request.send(user);
-    });
-  }
-
-  static postAuth(url, object) {
-    return new Promise(function (resolve, reject) {
-      let request = new XMLHttpRequest();
-      request.onreadystatechange = function () {
-        if (request.readyState === 4) {
-          if (request.status === 201 ||request.status === 200 ) {
-            resolve(request.responseText);
-          } else {
-            reject(request);
-          }
-        }
-      };
-      request.open("POST", url);
-      request.setRequestHeader("Content-Type", "application/json");
-      request.setRequestHeader("Authorization", "Bearer "+ localStorage.getItem("userToken"));
-      request.send(object);
     });
   }
 }

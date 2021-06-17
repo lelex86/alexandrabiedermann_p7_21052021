@@ -7,16 +7,20 @@
     position: relative;
     z-index: 1;
 
-    form {
-        width: 100%;
 
-        label {
-            display: inline-block;
-            width: 20%;
-        }
 
-        input {
-            width: 70%;
-        }
+    label {
+        display: inline-block;
+        width: 20%;
+        text-align: left;
+    }
+
+    input {
+        width: 70%;
+        margin: 2%;
+    }
+
+    #text {
+        height: 200px;
     }
 }

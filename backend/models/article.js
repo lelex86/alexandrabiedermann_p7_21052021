@@ -1,5 +1,4 @@
 const db = require("../config/db");
-const sanitize = require("../config/sanitize");
 
 class Article {
   static create = (article, callback) => {
