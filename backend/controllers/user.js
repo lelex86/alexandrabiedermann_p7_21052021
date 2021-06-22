@@ -39,8 +39,8 @@ exports.login = (req, res, next) => {
               } else {
                 console.log("connexion réussie!")
               res.status(200).json({
-                userId: results[0].user_id,
-                token: jwt.sign({ userId: results[0].user_id }, process.env.TOKEN_KEY, {
+                userId: results[0].id,
+                token: jwt.sign({ userId: results[0].id }, process.env.TOKEN_KEY, {
                   expiresIn: "24h",
                 }),
               });}
@@ -62,7 +62,7 @@ exports.modify = (req, res, next) => {
         } else {
           const user = results[0];
           console.log("Utilistaeur", user);
-          const newUser= {...user, password: req.body.password, user_id: req.params.id};
+          const newUser= {...user, password: req.body.password, id: req.params.id};
           console.log("nouvel user:", newUser);
           User.update(newUser, (err, results) => {
             if (err) {
@@ -82,9 +82,9 @@ exports.modify = (req, res, next) => {
 
 exports.delete = (req, res, next) => {
   User.searchById(req.params.id, (err, results) => {
-    user_id=req.params.id;
-    console.log("id",user_id);
-    User.delete(user_id, (err, results) => {
+    id=req.params.id;
+    console.log("id",id);
+    User.delete(id, (err, results) => {
       if (err) {
         res.status(400).send(err);
       } else {

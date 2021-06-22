@@ -22,7 +22,7 @@ exports.modifyComment = (req, res, next) => {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
-      if (userId == comment.author) {
+      if (userId == comment.user_id) {
         const commentObject={
           ...req.body,
           id: req.params.id
@@ -50,7 +50,7 @@ exports.deleteComment = (req, res, next) => {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
-      if (userId == comment.author) {
+      if (userId == comment.user_id) {
         Comment.delete(req.params.id, (err, results) => {
           if (err) {
             res.status(400).send(err);

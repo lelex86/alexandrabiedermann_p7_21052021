@@ -1,6 +1,3 @@
-let id = new URLSearchParams(window.location.search).get("id");
-
-
 class Controller {
   //Fonctions générales
   static getFormData(formData) {
@@ -94,38 +91,25 @@ class Controller {
 
   }
 
-  static publishPost(){
-    let url = "http://localhost:3000/api/articles";
-    let today= new Date();
-    let todayYear= today.getFullYear();
-    let todayMonth= today.getMonth();
-    let todayDay= today.getDay();
-    let todayDate = todayYear+'/'+todayMonth+'/'+todayDay;
-    let todayTime = today.toLocaleTimeString('fr-FR',{
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric'
-    });
-    let file = document.getElementById("image").value;
-    console.log("image",file);  
-    let formulaire = document.getElementById("formulaire");
-    let data = new FormData(formulaire);
-    let article = {title: Controller.getFormData(data).articleTitle,
-    body: Controller.getFormData(data).text,
-    author: localStorage.getItem("userId"),
-    date: todayDate + ' ' + todayTime,
-    };
-    let postObject= JSON.stringify(article);
-    console.log("article", postObject);
-    Model.postAuth(url, postObject)
+  static savePost(form, articleId){
+    let serverUrl = "http://localhost:3000/";  
+    let FormData = new FormData(form);
+    if (articleId) {
+      var method = "PUT";
+      var url = serverUrl + '/api/articles/' + articleId;
+  } else {
+      var method = "POST";
+      var url = serverUrl + '/api/articles/';
+  }
+    Model.postFetch(FormData, method, url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
-        console.log(JSON.parse(response));
+        console.log("réponse:", response);
         let view= new View ();
         view.wall();
       })
-      .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
+      .catch(function (req) {
+        console.error("Échec connexion API. Erreur=", req.responseText);
       });
     
   }
@@ -172,8 +156,8 @@ class Controller {
     let data = new FormData(formulaire);
     console.log(Controller.getFormData(data));
     let comment = {
-    author: localStorage.getItem("userId"),
-    article: id,
+    user_id: localStorage.getItem("userId"),
+    article_id: id,
     commentaire: Controller.getFormData(data).commentaire
     };
     let postObject= JSON.stringify(comment);

@@ -61,7 +61,7 @@ exports.modifyArticle = (req, res, next) => {
             imageUrl: `${req.protocol}://${req.get("host")}/images/${
               req.file.filename
             }`,
-            article_id: req.params.id
+            id: req.params.id
           };
           Article.update(articleObject, (err, results) => {
             if (err) {
@@ -93,7 +93,7 @@ exports.deleteArticle = (req, res, next) => {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
-      if (userId == article.author) {
+      if (userId == article.user_id) {
         if (article.imageUrl != null) {
           const filename = article.imageUrl.split("/images/")[1];
           fs.unlink(`images/${filename}`, () => {

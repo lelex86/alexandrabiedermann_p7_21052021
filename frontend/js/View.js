@@ -54,19 +54,19 @@ class View {
           name="contact"
           onsubmit="Controller.signup(this); return false;"
         >
-          <label for="userName">Nom:</label>
+          <label for="name">Nom:</label>
           <input
             type="text"
-            name="userName"
+            name="name"
             pattern="[A-ZÀ-ÿa-z\s-]{2,100}"
             placeholder="Nom"
             required
           /><br /><br />
 
-          <label for="userFirstname">Prénom:</label>
+          <label for="firstname">Prénom:</label>
           <input
             type="text"
-            name="userFirstname"
+            name="firstname"
             pattern="[A-ZÀ-ÿa-z\s-]{2,100}"
             placeholder="Prénom"
             required
@@ -155,7 +155,7 @@ class View {
         document.getElementById("main").innerHTML+=/*html*/`
                     <aside>
                         <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">  
-                        <h2>${user.userName} ${user.userFirstname} </h2>
+                        <h2>${user.name} ${user.firstname} </h2>
                         <p>${user.email}</p>
                         <ul>
                             <li class="link">Mes j'aime</li>
@@ -166,27 +166,28 @@ class View {
                 `
     }
 
-    static post(){
+    static post(article){
 
         document.body.innerHTML += /*html*/ `
             <div class="customBoxContainer">
                 <div class="backgroundBlur"></div>
                 <div class="custom-box">
-                    <form id="formulaire" onsubmit="Controller.publishPost(this); return false">
+                    <form id="formulaire" onsubmit="Controller.savePost(this); return false">
                         <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">
-                    <label id="articleTitle" for="articleTitle">Titre</label>
+                        <input type="hidden" name="userId" value="${localStorage.getItem('userId')}">
+                        <input type="hidden" name="id" value="${article.id}">
+                    <label for="title">Titre</label>
                     <input
                         type="text"
-                        name="articleTitle"
+                        name="title"
                         pattern="[A-ZÀ-ÿa-z0-9\s-]{2,100}"
                         placeholder="Titre"
                         required
                     />
-                    <label for="text">texte</label>
+                    <label for="body">texte</label>
                     <input
-                        id="text"
                         type="textarea"
-                        name="text"
+                        name="body"
                         pattern="[A-ZÀ-ÿa-z0-9\s-]{2,100}"
                         placeholder="Votre texte."
                         required
@@ -195,7 +196,7 @@ class View {
                     <input
                         id="image"
                         type="file"
-                        name="image"
+                        name="imageURL"
                         accept="image/.png, image/.jpg, image/.jpeg"
                         placeholder="insérer une image"
                     />
@@ -212,10 +213,10 @@ class View {
         console.log("articles", articles)
         for (let article of articles){
             document.getElementById("articles").innerHTML += /*html*/ `
-            <a href="index.html?id=${article.article_id}">
+            <a href="index.html?id=${article.id}">
                 <article>
-                    <h2>${article.article_title}</h2>
-                    <p>${article.article_body}</p>
+                    <h2>${article.title}</h2>
+                    <p>${article.body}</p>
                 </article>
             </a>
             `;
@@ -231,11 +232,11 @@ class View {
                 <div class="custom-box" id="oneArticle">
                     <input id="close" type="button" value="fermer" onclick="window.location.replace('index.html')">
                     <div class="article">
-                        <h2>${article[0].article_title}</h2>
+                        <h2>${article[0].title}</h2>
                         <div>
                             <img src="${article.imageURL}"/>
                         </div>
-                        <p>${article[0].article_body}</p>
+                        <p>${article[0].body}</p>
                     </div>   
                     <div class="like">
                         <a href="#"><i class="far fa-thumbs-up"></i></a>

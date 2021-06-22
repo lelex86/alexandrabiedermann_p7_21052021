@@ -3,8 +3,8 @@ const db = require("../config/db");
 class Comment {
   static create = (comment, callback) => {
     db.query(
-      "INSERT INTO commentaires SET author=?, article=?, commentaire=?",
-      [comment.author, comment.article, comment.commentaire],
+      "INSERT INTO commentaires SET user_id=?, article_id=?, commentaire=?",
+      [comment.user_id, comment.article_id, comment.commentaire],
       (error, result) => {
         callback(error, result);
       }
@@ -40,7 +40,7 @@ class Comment {
 
   static searchByUser = (user, callback) => {
     db.query(
-      "SELECT* FROM commentaires WHERE author=?",
+      "SELECT* FROM commentaires WHERE user_id=?",
       user,
       (error, result) => {
         callback(error, result);

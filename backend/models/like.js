@@ -3,10 +3,10 @@ const db = require("../config/db");
 class Like {
   static create = (like, callback) => {
     db.query(
-      "INSERT INTO likes SET user=?, article=?, like=?, dislike=?",
+      "INSERT INTO likes SET user_id=?, article_id=?, like=?, dislike=?",
       [
-        like.user,
-        like.article,
+        like.user_id,
+        like.article_id,
         like.like,
         like.dislike
       ],
@@ -17,10 +17,10 @@ class Like {
   };
 
 
-  static delete = (user, callback) => {
+  static delete = (user_id, callback) => {
     db.query(
-      "DELETE FROM likes WHERE user=?",
-      user,
+      "DELETE FROM likes WHERE user_id=?",
+      user_id,
       (error, result) => {
         callback(error, result);
       }
@@ -28,13 +28,19 @@ class Like {
   };
 
   static searchLike = (callback) => {
-    db.query("SELECT* FROM like WHERE like=true", (error, result) => {
+    db.query("SELECT* FROM like WHERE like=1", (error, result) => {
       callback(error, result);
     });
   };
 
-  static searchDislike = (callback) => {
-    db.query("SELECT* FROM like WHERE dislike=true", (error, result) => {
+  static sumLike = (callback) => {
+    db.query("SELECT SUM (like) FROM like", (error, result) => {
+      callback(error, result);
+    });
+  };
+
+  static sumDislike = (callback) => {
+    db.query("SELECT SUM (like) FROM like", (error, result) => {
       callback(error, result);
     });
   };

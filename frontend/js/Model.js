@@ -62,4 +62,34 @@ class Model {
       request.send(object);
     });
   }
+
+  static postFetch(formData, method, url) {
+    console.log("method=",method);
+    console.log("url=",url);
+    return new Promise(function (resolve, reject) {
+        fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("userToken")
+                },
+                body: formData
+            })
+            .then(response => {
+              console.log("réponse:", response)
+                if (response.status == 200 || response.status == 201) {
+                    response.json()
+                        .then(data => {
+                            console.log("Data=", data);
+                            resolve(data);
+                        })
+                } else {
+                    reject(response.status);
+                }
+            })
+            .catch(error => {
+                console.log("error=", error);
+            })
+    })
+}
+
 }

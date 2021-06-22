@@ -3,13 +3,12 @@ const db = require("../config/db");
 class Article {
   static create = (article, callback) => {
     db.query(
-      "INSERT INTO articles SET article_title=?, article_body=?, imageUrl=?, author=?, created_at=?",
+      "INSERT INTO articles SET title=?, body=?, imageUrl=?, user_id=?",
       [
         article.title,
         article.body,
         article.imageUrl,
-        article.author,
-        article.date,
+        article.user_id,
       ],
       (error, result) => {
         callback(error, result);
@@ -17,20 +16,20 @@ class Article {
     );
   };
 
-  static searchByAuthor = (author, callback) => {
+  static searchByAuthor = (user_id, callback) => {
     db.query(
-      "SELECT* FROM articles WHERE author=?",
-      author,
+      "SELECT* FROM articles WHERE user_id=?",
+      user_id,
       (error, result) => {
         callback(error, result);
       }
     );
   };
 
-  static searchById = (article_id, callback) => {
+  static searchById = (id, callback) => {
     db.query(
-      "SELECT* FROM articles WHERE article_id=?",
-      article_id,
+      "SELECT* FROM articles WHERE id=?",
+      id,
       (error, result) => {
         callback(error, result);
       }
@@ -39,14 +38,13 @@ class Article {
 
   static update = (article, callback) => {
     db.query(
-      "UPDATE articles SET article_title=?, article_body=?, imageUrl=?, author=?, created_at=? WHERE article_id=?",
+      "UPDATE articles SET title=?, body=?, imageUrl=?, user_id=? WHERE id=?",
       [
         article.title,
         article.body,
         article.image,
-        article.author,
-        article.date,
-        article.article_id
+        article.user_id,
+        article.id
       ],
       (error, result) => {
         callback(error, result);
@@ -54,10 +52,10 @@ class Article {
     );
   };
 
-  static delete = (article_id, callback) => {
+  static delete = (id, callback) => {
     db.query(
-      "DELETE FROM articles WHERE article_id=?",
-      article_id,
+      "DELETE FROM articles WHERE id=?",
+      id,
       (error, result) => {
         callback(error, result);
       }
