@@ -18,15 +18,14 @@ exports.modifyComment = (req, res, next) => {
       res.status(400).send(err);
     } else {
       const comment = results[0];
-      console.log(comment)
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
       if (userId == comment.user_id) {
-        const commentObject={
+        const commentObject = {
           ...req.body,
-          id: req.params.id
-        }
+          id: req.params.id,
+        };
         Comment.update(commentObject, (err, results) => {
           if (err) {
             res.status(400).send(err);
@@ -65,8 +64,8 @@ exports.deleteComment = (req, res, next) => {
   });
 };
 
-exports.getAll = (req, res, next) => {
-  Comment.searchAll((err, results) => {
+exports.getByArticle = (req, res, next) => {
+  Comment.searchByArticle(req.params.article_id, (err, results) => {
     if (err) {
       res.status(400).send(err);
     } else {
@@ -76,7 +75,7 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.getByAuthor = (req, res, next) => {
-  Comment.searchByUser(req.params.id, (err, results) => {
+  Comment.searchByUser(req.params.user_id, (err, results) => {
     if (err) {
       res.status(400).send(err);
     } else {

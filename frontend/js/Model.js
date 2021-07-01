@@ -25,7 +25,7 @@ class Model {
     });
   }
 
-  // Nouvelle classe pour réaliser notre POST
+  // nouvelle méthode pour réaliser les requêtes POST sans authentification
   static post(url, user) {
     return new Promise(function (resolve, reject) {
       let request = new XMLHttpRequest();
@@ -44,6 +44,7 @@ class Model {
     });
   }
 
+  // nouvelle méthode pour réaliser les requêtes POST avec authentification
   static postAuth(url, object) {
     return new Promise(function (resolve, reject) {
       let request = new XMLHttpRequest();
@@ -63,6 +64,7 @@ class Model {
     });
   }
 
+  // nouvelle méthode pour réaliser les requêtes POST et les requêtes PUT envoyant des images
   static postFetch(formData, method, url) {
     console.log("method=",method);
     console.log("url=",url);
@@ -90,6 +92,46 @@ class Model {
                 console.log("error=", error);
             })
     })
+}
+
+// nouvelle méthode pour réaliser les requêtes PUT
+static put(url, object) {
+  return new Promise(function (resolve, reject) {
+    let request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 201 ||request.status === 200 ) {
+          resolve(request.responseText);
+        } else {
+          reject(request);
+        }
+      }
+    };
+    request.open("PUT", url);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.setRequestHeader("Authorization", "Bearer "+ localStorage.getItem("userToken"));
+    request.send(object);
+  });
+}
+
+// nouvelle méthode pour réaliser les requêtes DELETE sans authentification
+static delete(url) {
+  return new Promise(function (resolve, reject) {
+    let request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          console.log(request)
+          resolve(request.responseText);
+        } else {
+          reject(request);
+        }
+      }
+    };
+    request.open("DELETE", url);
+    request.setRequestHeader("Authorization", "Bearer "+ localStorage.getItem("userToken"));
+    request.send();
+  });
 }
 
 }

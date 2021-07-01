@@ -3,46 +3,58 @@ const db = require("../config/db");
 class Like {
   static create = (like, callback) => {
     db.query(
-      "INSERT INTO likes SET user_id=?, article_id=?, like=?, dislike=?",
-      [
-        like.user_id,
-        like.article_id,
-        like.like,
-        like.dislike
-      ],
+      "INSERT INTO likes SET user_id=?, article_id=?, likes=?, dislikes=?",
+      [like.user_id, like.article_id, like.likes, like.dislikes],
       (error, result) => {
         callback(error, result);
       }
     );
   };
 
-
-  static delete = (user_id, callback) => {
+  static delete = (user_id, article_id, callback) => {
     db.query(
-      "DELETE FROM likes WHERE user_id=?",
-      user_id,
+      "DELETE FROM likes WHERE user_id=? AND article_id=?",
+      [user_id, article_id],
       (error, result) => {
         callback(error, result);
       }
     );
   };
 
-  static searchLike = (callback) => {
-    db.query("SELECT* FROM like WHERE like=1", (error, result) => {
+  static searchLikeByArticle = (article_id, callback) => {
+    db.query(
+      "SELECT* FROM likes WHERE article_id=?",
+      article_id,
+      (error, result) => {
+        callback(error, result);
+      }
+    );
+  };
+
+  static searchLikeByUser = (user_id, callback) => {
+    db.query("SELECT* FROM likes WHERE user_id=?", user_id, (error, result) => {
       callback(error, result);
     });
   };
 
-  static sumLike = (callback) => {
-    db.query("SELECT SUM (like) FROM like", (error, result) => {
-      callback(error, result);
-    });
+  static sumLike = (article_id, callback) => {
+    db.query(
+      "SELECT SUM(likes) AS somme FROM likes WHERE article_id=?",
+      article_id,
+      (error, result) => {
+        callback(error, result);
+      }
+    );
   };
 
-  static sumDislike = (callback) => {
-    db.query("SELECT SUM (like) FROM like", (error, result) => {
-      callback(error, result);
-    });
+  static sumDislike = (article_id, callback) => {
+    db.query(
+      "SELECT SUM(dislikes) AS somme FROM likes WHERE article_id=?",
+      article_id,
+      (error, result) => {
+        callback(error, result);
+      }
+    );
   };
 }
 

@@ -4,12 +4,12 @@ const jwt = require("jsonwebtoken");
 
 exports.createArticle = (req, res, next) => {
   if (req.file) {
-    const article = new Article({
+    const article = {
       ...req.body,
       imageUrl: `${req.protocol}://${req.get("host")}/images/${
         req.file.filename
       }`,
-    });
+    };
     Article.create(article, (err, results) => {
       if (err) {
         res.status(400).send(err);
@@ -39,7 +39,7 @@ exports.getOne = (req, res, next) => {
 };
 
 exports.getByAuthor = (req, res, next) => {
-  Article.searchByAuthor(req.params.id, (err, results) => {
+  Article.searchByAuthor(req.params.user_id, (err, results) => {
     if (err) {
       res.status(400).send(err);
     } else {
@@ -61,7 +61,7 @@ exports.modifyArticle = (req, res, next) => {
             imageUrl: `${req.protocol}://${req.get("host")}/images/${
               req.file.filename
             }`,
-            id: req.params.id
+            id: req.params.id,
           };
           Article.update(articleObject, (err, results) => {
             if (err) {
@@ -115,8 +115,49 @@ exports.deleteArticle = (req, res, next) => {
           });
         }
       } else {
-        console.log("L'utilisateur n'a pas le droit de supprimer cette sauce!");
+        console.log(
+          "L'utilisateur n'a pas le droit de supprimer cette article!"
+        );
         res.status(401).json(err);
+      }
+    }
+  });
+};
+
+exports.deleteWithUser = (req, res, next) => {
+  let user_id = req.params.id;
+  Article.searchByAuthor(user_id, (err, results) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      for (let result of results) {
+        Article.searchById(result.id, (err, results) => {
+          let article = results;
+          if (err) {
+            res.status(400).send(err);
+          } else {
+            if (article.imageUrl != null) {
+              const filename = article.imageUrl.split("/images/")[1];
+              fs.unlink(`images/${filename}`, () => {
+                Article.delete(article.id, (err, results) => {
+                  if (err) {
+                    res.status(400).send(err);
+                  } else {
+                    res.status(200).json(results);
+                  }
+                });
+              });
+            } else {
+              Article.delete(article.id, (err, results) => {
+                if (err) {
+                  res.status(400).send(err);
+                } else {
+                  res.status(200).json(results);
+                }
+              });
+            }
+          }
+        });
       }
     }
   });

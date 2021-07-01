@@ -10,7 +10,7 @@ const articleCtrl = require("../controllers/article");
 router.get("/", auth, limit.apiLimiter, articleCtrl.getAll);
 router.post("/", auth, limit.apiLimiter, multer, articleCtrl.createArticle);
 router.get("/:id", auth, limit.apiLimiter, articleCtrl.getOne);
-router.get("/user/:id", auth, limit.apiLimiter, articleCtrl.getByAuthor);
+router.get("/user/:user_id", auth, limit.apiLimiter, articleCtrl.getByAuthor);
 router.put("/:id", auth, limit.apiLimiter, multer, articleCtrl.modifyArticle);
 router.delete("/:id", auth, limit.apiLimiter, articleCtrl.deleteArticle);
 

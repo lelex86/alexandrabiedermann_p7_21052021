@@ -11,15 +11,4 @@ main {
         position: relative;
         z-index: 0;
     }
-    div{
-        height:500px;
-        width:100%;
-        position: absolute;
-        z-index: 1;
-        background-image: url(../logo/icon-above-font.png);
-        background-size: 80%;
-        background-position: center;
-        background-repeat: no-repeat;
-        filter: blur(12px);
-    }
 }
