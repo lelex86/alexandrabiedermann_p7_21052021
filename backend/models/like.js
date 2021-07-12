@@ -32,9 +32,13 @@ class Like {
   };
 
   static searchLikeByUser = (user_id, callback) => {
-    db.query("SELECT* FROM likes WHERE user_id=?", user_id, (error, result) => {
-      callback(error, result);
-    });
+    db.query(
+      "SELECT articles.* FROM likes, articles WHERE likes.user_id=? AND articles.id=likes.article_id",
+      user_id,
+      (error, result) => {
+        callback(error, result);
+      }
+    );
   };
 
   static sumLike = (article_id, callback) => {

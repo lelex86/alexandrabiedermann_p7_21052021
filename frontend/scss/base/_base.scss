@@ -6,9 +6,16 @@ a{
     }
 }
 
-.like{
-    display: flex;
-    justify-content: space-between;
-    width: 50px;
+p{
+    white-space: auto;
 }
 
+h1,h2,h3{
+    text-align: center;
+    width: 100%;
+}
+
+h1 {
+    position: relative;
+    z-index: 0;
+}

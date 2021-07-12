@@ -12,6 +12,6 @@ router.post("/", auth, limit.apiLimiter, multer, articleCtrl.createArticle);
 router.get("/:id", auth, limit.apiLimiter, articleCtrl.getOne);
 router.get("/user/:user_id", auth, limit.apiLimiter, articleCtrl.getByAuthor);
 router.put("/:id", auth, limit.apiLimiter, multer, articleCtrl.modifyArticle);
-router.delete("/:id", auth, limit.apiLimiter, articleCtrl.deleteArticle);
+router.delete("/:id/:user_id/:isAdmin", auth, limit.apiLimiter, articleCtrl.deleteArticle);
 
 module.exports = router;

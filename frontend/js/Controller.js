@@ -6,6 +6,7 @@ const article_id = new URLSearchParams(window.location.search).get("id");
 
 class Controller {
   /*********************************** Méthodes utiles dans plusieurs autres méthodes ***********************************/
+
   static getFormData(formData) {
     let objectData = {};
     formData.forEach(function (value, key) {
@@ -14,8 +15,16 @@ class Controller {
     return objectData;
   }
 
+  static isAdmin() {
+    if (localStorage.getItem("isAdmin")) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
   static index() {
-    let userId=localStorage.getItem("userId");
+    let userId = localStorage.getItem("userId");
     if (userId > 0) {
       let view = new View();
       view.wall();
@@ -50,11 +59,11 @@ class Controller {
     if (diff < 60) {
       let rep = "moins d'une minute";
       return rep;
-    } else if (60 < diff > 3600) {
+    } else if (diff > 60 && diff < 3600) {
       let time = diff / 60;
       let rep = "Il y a " + time.toFixed() + " minutes";
       return rep;
-    } else if (3600 < diff > 86400) {
+    } else if (diff > 3600 && diff < 86400) {
       let time = diff / 3600;
       let rep = "Il y a " + time.toFixed() + " heures";
       return rep;
@@ -79,9 +88,14 @@ class Controller {
         Controller.login();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -97,47 +111,78 @@ class Controller {
         user = JSON.parse(response);
         localStorage.setItem("userToken", user.token);
         localStorage.setItem("userId", user.userId);
+        if (user.isAdmin == 1) {
+          localStorage.setItem("isAdmin", user.isAdmin);
+        }
         let view = new View();
         view.wall();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
+        console.error("Échec connexion API. Erreur=", error);
         let view = new View();
         view.errorPage(error);
       });
   }
 
   static modifyUser() {
-    let url = urlServer + "user/" + user_id;
     let formulaire = document.getElementById("formulaire");
     let data = new FormData(formulaire);
     let user = JSON.stringify(Controller.getFormData(data));
+    let url =
+      urlServer +
+      "user/" +
+      Controller.getFormData(data).id +
+      "/" +
+      Controller.isAdmin();
     Model.put(url, user)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
         console.log("Utilisateur modifié!");
-        let view = new View();
-        view.showProfil(JSON.parse(response));
+        if (localStorage.getItem("isAdmin")) {
+          Controller.getAllUsers();
+        } else {
+          let view = new View();
+          view.showProfil(JSON.parse(response));
+        }
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
+        console.error("Échec connexion API. Erreur=", error);
         let view = new View();
         view.errorPage(error);
       });
   }
 
   static deleteUser() {
-    let url = urlServer + "user/" + user_id;
+    let url = urlServer + "user/" + user_id + Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
         console.log("Utilisateur supprimé!");
         localStorage.clear();
-        let view = new View();
-        view.startPage();
+        Controller.index();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
+        console.error("Échec connexion API. Erreur=", error);
+        let view = new View();
+        view.errorPage(error);
+      });
+  }
+
+  static deleteUserByAdmin(userId) {
+    let url = urlServer + "user/" + userId + Controller.isAdmin();
+    Model.delete(url)
+      .then(function (response) {
+        console.log("Connexion à l'API réussie!");
+        console.log("Utilisateur supprimé!");
+        if ((userId = user_id)) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          Controller.getAllUsers();
+        }
+      })
+      .catch(function (error) {
+        console.error("Échec connexion API. Erreur=", error);
         let view = new View();
         view.errorPage(error);
       });
@@ -153,8 +198,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -168,24 +218,53 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
-  static getUserByArticle(article) {
-    let id = article[0].user_id;
-    let url = urlServer + "user/" + id;
+  static getUserByAdmin(userId) {
+    let url = urlServer + "user/" + userId;
     let user = Model.get(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
         let view = new View();
-        view.showOneArticle(JSON.parse(response), article);
+        view.modifyUser(JSON.parse(response)[0]);
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
+      });
+  }
+
+  static getAllUsers(userId) {
+    let url = urlServer + "user/";
+    let user = Model.get(url)
+      .then(function (response) {
+        console.log("Connexion à l'API réussie!");
         let view = new View();
-        view.errorPage(error);
+        view.showUsers(JSON.parse(response));
+      })
+      .catch(function (error) {
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -208,8 +287,13 @@ class Controller {
       })
       .catch(function (req) {
         console.error("Échec connexion API. Erreur=", req.responseText);
-        let view = new View();
-        view.errorPage(req.responseText);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(req.responseText);
+        }
       });
   }
 
@@ -223,8 +307,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -238,8 +327,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -248,12 +342,18 @@ class Controller {
     let article = Model.get(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
-        Controller.getUserByArticle(JSON.parse(response));
+        let view = new View();
+        view.showOneArticle(JSON.parse(response)[0]);
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -266,8 +366,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -281,35 +386,22 @@ class Controller {
         view.wall();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
-
-  static getArticleByLike(likes) {
-    let articles = [];
-    for (let like of likes) {
-      let articleId = likes.article_id;
-      let url = urlServer + "articles/" + articleId;
-      let article = Model.get(url)
-        .then(function (response) {
-          console.log("Connexion à l'API réussie!");
-          articles.push(JSON.parse(response));
-        })
-        .catch(function (error) {
-          console.error("Échec connexion API. Erreur=", error);
-        });
-    }
-  }
-
   /*********************************** Méthodes gérants les commentaires ***********************************/
 
   static sendComment() {
     let url = urlServer + "comment";
     let formulaire = document.getElementById("formulaire");
     let data = new FormData(formulaire);
-    console.log(Controller.getFormData(data));
     let comment = {
       user_id: user_id,
       article_id: article_id,
@@ -323,9 +415,14 @@ class Controller {
         view.wall();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -339,8 +436,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -354,8 +456,56 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
+      });
+  }
+
+  static modifyComment() {
+    let formulaire = document.getElementById("formulaire");
+    let data = new FormData(formulaire);
+    let comment = Controller.getFormData(data);
+    let url = urlServer + "comment/" + comment.id;
+    Model.put(url, JSON.stringify(comment))
+      .then(function (response) {
+        console.log("Connexion à l'API réussie!");
+        Controller.getCommentByUser(user_id);
+      })
+      .catch(function (error) {
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
+      });
+  }
+
+  static deleteComment(id) {
+    let url = urlServer + "comment/" + id + Controller.isAdmin();
+    Model.delete(url)
+      .then(function (response) {
+        console.log("Connexion à l'API réussie!");
+        console.log("commentaire supprimé!");
         let view = new View();
-        view.errorPage(error);
+        view.wall();
+      })
+      .catch(function (error) {
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -376,9 +526,14 @@ class Controller {
         Controller.getLikeByArticle();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
   static dislike() {
@@ -396,9 +551,14 @@ class Controller {
         Controller.getLikeByArticle();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -410,9 +570,14 @@ class Controller {
         Controller.getLikeByArticle();
       })
       .catch(function (error) {
-        console.log("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -439,8 +604,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -454,8 +624,13 @@ class Controller {
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 
@@ -464,12 +639,18 @@ class Controller {
     let likes = Model.get(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
-        Controller.getArticleByLike(JSON.parse(response)[0]);
+        let view = new View();
+        view.showArticlesByLike(JSON.parse(response));
       })
       .catch(function (error) {
         console.error("Échec connexion API. Erreur=", error);
-        let view = new View();
-        view.errorPage(error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
       });
   }
 }

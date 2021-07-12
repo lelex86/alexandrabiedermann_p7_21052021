@@ -26,7 +26,7 @@ exports.signup = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   User.searchByMail(req.body.email, (err, results) => {
-    if (req.body.email != results[0].email) {
+    if (/* req.body.email != results[0].email|| */results.length==0) {
       console.log("Utilisateur non trouvé");
       return res.status(401).json({ error: "Utilisateur non trouvé !" });
     } else {
@@ -47,6 +47,7 @@ exports.login = (req, res, next) => {
                   expiresIn: "24h",
                 }
               ),
+              isAdmin: results[0].isAdmin
             });
           }
         })
@@ -56,63 +57,78 @@ exports.login = (req, res, next) => {
 };
 
 exports.modify = (req, res, next) => {
-  if (req.body.password) {
-    bcrypt
-      .hash(req.body.password, 10)
-      .then((hash) => {
-        req.body.password = hash;
-        const newUser = {
-          ...req.body,
-          password: req.body.password,
-          id: req.params.id,
-        };
-        User.update(newUser, (err, results) => {
-          if (err) {
-            res.status(400).send(err);
-          } else {
-            res.status(200).json(results);
-          }
-        });
-      })
-      .catch((error) =>
-        res.status(500).json({
-          error,
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+  const userId = decodedToken.userId;
+  if (userId == req.params.id || req.params.isAdmin == 1) {
+    if (req.body.password) {
+      bcrypt
+        .hash(req.body.password, 10)
+        .then((hash) => {
+          req.body.password = hash;
+          const newUser = {
+            ...req.body,
+            password: req.body.password,
+            id: req.params.id,
+          };
+          User.update(newUser, (err, results) => {
+            if (err) {
+              res.status(400).send(err);
+            } else {
+              res.status(200).json(results);
+            }
+          });
         })
-      );
+        .catch((error) =>
+          res.status(500).json({
+            error,
+          })
+        );
+    } else {
+      User.searchById(req.params.id, (err, results) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          const user = results[0];
+          const newUser = {
+            ...req.body,
+            password: user.password,
+            id: req.params.id,
+          };
+          User.update(newUser, (err, results) => {
+            if (err) {
+              res.status(400).send(err);
+            } else {
+              res.status(200).json(newUser);
+            }
+          });
+        }
+      });
+    }
   } else {
-    User.searchById(req.params.id, (err, results) => {
-      if (err) {
-        console.log("erreur", err);
-      } else {
-        const user = results[0];
-        const newUser = {
-          ...req.body,
-          password: user.password,
-          id: req.params.id,
-        };
-        User.update(newUser, (err, results) => {
-          if (err) {
-            res.status(400).send(err);
-          } else {
-            res.status(200).json(newUser);
-          }
-        });
-      }
-    });
+    res.status(401).send({error: "Utilisateur non autorisé!"});
   }
 };
 
 exports.delete = (req, res, next) => {
   Article.deleteWithUser(req);
   User.searchById(req.params.id, (err, results) => {
-    id = req.params.id;
-    User.delete(id, (err, results) => {
-      if (err) {
-        res.status(400).send(err);
-      } else {
-        res.status(200).json(results);
-      }
-    });
+    const user = results[0];
+    const token = req.headers.authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+    const userId = decodedToken.userId;
+    if (userId == user.id || req.params.isAdmin == 1) {
+      id = req.params.id;
+      User.delete(id, (err, results) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.status(200).json(results);
+        }
+      });
+    } else {
+      res.status(401).send(err);
+    }
   });
 };
 

@@ -7,7 +7,7 @@ const limit = require("../middleware/limit");
 
 router.post("/", auth, limit.apiLimiter, commentCtrl.createComment);
 router.put("/:id", auth, limit.apiLimiter, commentCtrl.modifyComment);
-router.delete("/:id", auth, limit.apiLimiter, commentCtrl.deleteComment);
+router.delete("/:id/:isAdmin", auth, limit.apiLimiter, commentCtrl.deleteComment);
 router.get("/:article_id", auth, limit.apiLimiter, commentCtrl.getByArticle);
 router.get("/user/:user_id", auth, limit.apiLimiter, commentCtrl.getByAuthor);
 

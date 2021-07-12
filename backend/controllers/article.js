@@ -54,23 +54,48 @@ exports.modifyArticle = (req, res, next) => {
       if (err) {
         res.status(400).send(err);
       } else {
-        const filename = article.imageUrl.split("/images/")[1];
-        fs.unlink(`images/${filename}`, () => {
-          const articleObject = {
-            ...req.body,
-            imageUrl: `${req.protocol}://${req.get("host")}/images/${
-              req.file.filename
-            }`,
-            id: req.params.id,
-          };
-          Article.update(articleObject, (err, results) => {
-            if (err) {
-              res.status(400).send(err);
-            } else {
-              res.status(200).json(results);
-            }
-          });
-        });
+        const article = results[0];
+        const token = req.headers.authorization.split(" ")[1];
+        const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+        const userId = decodedToken.userId;
+        if (userId == article.user_id) {
+          if (article.imageUrl != null) {
+            const filename = article.imageUrl.split("/images/")[1];
+            fs.unlink(`images/${filename}`, () => {
+              const articleObject = {
+                ...req.body,
+                imageUrl: `${req.protocol}://${req.get("host")}/images/${
+                  req.file.filename
+                }`,
+                id: req.params.id,
+              };
+              Article.update(articleObject, (err, results) => {
+                if (err) {
+                  res.status(400).send(err);
+                } else {
+                  res.status(200).json(results);
+                }
+              });
+            });
+          } else {
+            const articleObject = {
+              ...req.body,
+              imageUrl: `${req.protocol}://${req.get("host")}/images/${
+                req.file.filename
+              }`,
+              id: req.params.id,
+            };
+            Article.update(articleObject, (err, results) => {
+              if (err) {
+                res.status(400).send(err);
+              } else {
+                res.status(200).json(results);
+              }
+            });
+          }
+        } else {
+          res.status(401).json({ error: "L'utilisateur n'a pas le droit de modifier cet article!" });
+        }
       }
     });
   } else {
@@ -78,7 +103,14 @@ exports.modifyArticle = (req, res, next) => {
       if (err) {
         res.status(400).send(err);
       } else {
-        res.status(200).json(results);
+        const token = req.headers.authorization.split(" ")[1];
+        const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+        const userId = decodedToken.userId;
+        if (userId == req.body.user_id) {
+          res.status(200).json(results);
+        } else {
+          res.status(401).json({ error: "L'utilisateur n'a pas le droit de modifier cet article!" });
+        }
       }
     });
   }
@@ -89,11 +121,10 @@ exports.deleteArticle = (req, res, next) => {
     if (err) {
       res.status(400).send(err);
     } else {
-      const article = results[0];
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
-      if (userId == article.user_id) {
+      if (userId == req.params.user_id || req.params.isAdmin == 1) {
         if (article.imageUrl != null) {
           const filename = article.imageUrl.split("/images/")[1];
           fs.unlink(`images/${filename}`, () => {
@@ -115,10 +146,7 @@ exports.deleteArticle = (req, res, next) => {
           });
         }
       } else {
-        console.log(
-          "L'utilisateur n'a pas le droit de supprimer cette article!"
-        );
-        res.status(401).json(err);
+        res.status(401).json({ error: "L'utilisateur n'a pas le droit de supprimer cet article!" });
       }
     }
   });
@@ -131,33 +159,26 @@ exports.deleteWithUser = (req, res, next) => {
       res.status(400).send(err);
     } else {
       for (let result of results) {
-        Article.searchById(result.id, (err, results) => {
-          let article = results;
-          if (err) {
-            res.status(400).send(err);
-          } else {
-            if (article.imageUrl != null) {
-              const filename = article.imageUrl.split("/images/")[1];
-              fs.unlink(`images/${filename}`, () => {
-                Article.delete(article.id, (err, results) => {
-                  if (err) {
-                    res.status(400).send(err);
-                  } else {
-                    res.status(200).json(results);
-                  }
-                });
-              });
+        if (result.imageUrl != null) {
+          const filename = result.imageUrl.split("/images/")[1];
+          fs.unlink(`images/${filename}`, () => {
+            Article.delete(result.id, (err, results) => {
+              if (err) {
+                console.error("une erreur s'est produite:", err);
+              } else {
+                console.log("Article" + result.title + "supprimé!");
+              }
+            });
+          });
+        } else {
+          Article.delete(result.id, (err, results) => {
+            if (err) {
+              console.error("une erreur s'est produite:", err);
             } else {
-              Article.delete(article.id, (err, results) => {
-                if (err) {
-                  res.status(400).send(err);
-                } else {
-                  res.status(200).json(results);
-                }
-              });
+              console.log("Article" + result.title + "supprimé!");
             }
-          }
-        });
+          });
+        }
       }
     }
   });

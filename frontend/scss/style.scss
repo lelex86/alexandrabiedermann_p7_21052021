@@ -1,15 +1,15 @@
 @import "utils/variables";
+@import "utils/mixin";
 
 @import "base/base";
 @import "base/typographie";
 
 @import "components/buttons";
-@import "components/checkBox";
+@import "components/form";
 
-@import "layout/background";
+@import "layout/checkBox";
 @import "layout/container";
 @import "layout/header";
-@import "layout/footer";
-@import "layout/form";
+
 
 @import "pages/index";

@@ -25,8 +25,15 @@ class User {
 
   static update = (user, callback) => {
     db.query(
-      "UPDATE users SET name=?, firstname=?, email=?, password=? WHERE id=?",
-      [user.name, user.firstname, user.email, user.password, user.id],
+      "UPDATE users SET name=?, firstname=?, email=?, password=?, isAdmin=? WHERE id=?",
+      [
+        user.name,
+        user.firstname,
+        user.email,
+        user.password,
+        user.isAdmin,
+        user.id,
+      ],
       (error, result) => {
         callback(error, result);
       }

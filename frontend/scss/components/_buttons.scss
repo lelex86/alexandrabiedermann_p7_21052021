@@ -1,16 +1,31 @@
 button {
     display: block;
     background-color: $color-primary;
-    color:white;
+    color:black;
     padding: 10px 25px;
     margin: 4% auto;
     border-radius: 15px;
     border: none;
     cursor: pointer;
+    &:hover{
+        transform: scale(1.1);
+    }
 }
 
 .modify{
     background-color: white;
-    color:$color-primary;
+    color:black;
     border: $color-primary 1px solid;
+}
+
+.button{
+    display: flex;
+    justify-content: space-around;
+    background-color: white;
+}
+
+.userButton{
+    margin-top: 2%;
+    display: flex;
+    justify-content: space-between;
 }

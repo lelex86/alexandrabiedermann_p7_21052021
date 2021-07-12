@@ -49,7 +49,7 @@ exports.deleteComment = (req, res, next) => {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
-      if (userId == comment.user_id) {
+      if (userId == comment.user_id || req.params.isAdmin == 1) {
         Comment.delete(req.params.id, (err, results) => {
           if (err) {
             res.status(400).send(err);

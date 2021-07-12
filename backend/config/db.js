@@ -1,15 +1,14 @@
-// get the client
+require("dotenv").config();
 const mysql = require('mysql2');
  
-// create the connection to database
+// Création de la conection à la base de donnée.
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  //password: process.env.DB_PWD,
-  password: 'root',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PWD,
   port: 3306,
-  database: 'groupomania',
-  socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+  database: process.env.DB_DATABASE,
+  socketPath: process.env.DB_PATH
 });
 
 connection.connect((err) => {

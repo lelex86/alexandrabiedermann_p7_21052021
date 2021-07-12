@@ -19,7 +19,7 @@ class Comment {
 
   static update = (comment, callback) => {
     db.query(
-      "UPDATE FROM commentaires SET commentaire=? WHERE id=?",
+      "UPDATE commentaires SET commentaire=? WHERE id=?",
       [comment.commentaire, comment.id],
       (error, result) => {
         callback(error, result);
@@ -35,7 +35,7 @@ class Comment {
 
   static searchByUser = (user, callback) => {
     db.query(
-      "SELECT* FROM commentaires WHERE user_id=?",
+      "SELECT articles.*, commentaires.* FROM commentaires,articles WHERE commentaires.user_id=? AND articles.id=commentaires.article_id",
       user,
       (error, result) => {
         callback(error, result);
@@ -45,7 +45,7 @@ class Comment {
 
   static searchByArticle = (article_id, callback) => {
     db.query(
-      "SELECT* FROM commentaires WHERE article_id=?",
+      "SELECT commentaires.*, users.* FROM commentaires, users WHERE commentaires.article_id=? AND users.id=commentaires.user_id",
       article_id,
       (error, result) => {
         callback(error, result);
