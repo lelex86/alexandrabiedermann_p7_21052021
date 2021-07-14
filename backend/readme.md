@@ -160,12 +160,12 @@ ALTER TABLE `likes`
 
 Créer un fichier .env avec les informations suivantes:
 
-TOKEN_KEY= 'Clé pour le token'
-DB_HOST= 'Nom de l'hôte'
-DB_USER= 'Nom d'utilisateur'
-DB_PWD='mot de passe'
-DB_PATH='chemin d'accès à mysql'
-DB_DATABASE='Nom de la base de données'
+TOKEN_KEY= 'Clé pour le token'  
+DB_HOST= 'Nom de l'hôte'  
+DB_USER= 'Nom d'utilisateur'  
+DB_PWD='mot de passe'  
+DB_PATH='chemin d'accès à mysql'  
+DB_DATABASE='Nom de la base de données'  
 
 ## Démarrage du server
 

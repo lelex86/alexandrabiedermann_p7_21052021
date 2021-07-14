@@ -1,10 +1,12 @@
-#start{
-    img{
-        width:100%;
+#start {
+    img {
+        width: 100%;
     }
 }
 
-#articles, #users, #comment{
+#articles,
+#users,
+#comment {
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -13,94 +15,105 @@
     position: relative;
     z-index: 0;
 
-    article{
+    article {
         margin: 5px;
         padding: 5px;
-        width:300px;
-        height:400px;
+        width: 300px;
+        height: 400px;
         box-shadow: 2px 2px 2px 1px black;
         border-radius: 20px;
-        
-        img{
-            width:100%;
+        background-color: white;
+
+        img {
+            width: 100%;
             height: 200px;
             object-fit: cover;
             overflow: hidden;
         }
-        .extrait{
+
+        .extrait {
+            height: 50px;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        div{
-            width:100%;
+        div {
+            width: 100%;
         }
     }
 
-    a:hover{
-        transform: scale(1.2);
+    a:hover {
+        transform: scale(1.1);
+        z-index: 2;
     }
 
 }
 
-aside{
-    position:fixed;
+aside {
+    position: fixed;
     top: 0;
-    right:0;
+    right: 0;
     bottom: 0;
     width: fit-content;
     padding: 5%;
     z-index: 1;
     background-color: white;
     border-left: black 1px solid;
-    h2{
-        margin-top:100px;
+
+    h2 {
+        margin-top: 100px;
     }
-    div{
+
+    div {
         display: flex;
         justify-content: space-around;
         background-color: white;
     }
-    
+
 
 }
 
-.article{
+.article {
     border: black 1px solid;
     flex-direction: column;
     align-items: center;
 }
 
-.disable{
+.disable {
     pointer-events: none;
 }
 
-.author{
-    color:#797676;
+.author {
+    color: #797676;
     font-style: italic;
 }
 
-.comment-user{
+.comment-user {
     text-align: center;
-    margin:auto;
+    margin: auto;
     padding: 3px;
-    width:400px;
+    width: 400px;
     height: auto;
-    border:black 1px solid;
+    border: black 1px solid;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    a{
+
+    a {
         box-shadow: 1px 1px 1px 1px black;
         margin: auto;
-        width:200px;
+        width: 200px;
         height: 200px;
     }
-    img{
-        height:150px !important;
+
+    img {
+        height: 150px !important;
         object-fit: cover;
         margin: auto;
     }
 }
 
+#close {
+    cursor: pointer;
+}

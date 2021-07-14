@@ -1,8 +1,8 @@
 const sanitizer = require("express-html-sanitizer");
 config = {
-    allowedTags: [],
-    allowedAttributes: {},
-  };
+  allowedTags: [],
+  allowedAttributes: {},
+};
 const sanitize = sanitizer(config);
 
-module.exports= sanitize;
+module.exports = sanitize;

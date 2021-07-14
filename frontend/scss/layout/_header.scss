@@ -1,38 +1,44 @@
 header {
     width: 90%;
-    margin:auto;
+    margin: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+
     p {
         margin: 0;
         box-sizing: border-box;
         background-color: white;
+
         img {
             width: 150px;
             height: auto;
         }
-        @include mobile{
-            width:100%;
+
+        @include mobile {
+            width: 100%;
             text-align: center;
         }
 
     }
+
     nav {
         padding: 0 2px;
         width: 40%;
-        @include mobile{
-            width:100%;
+
+        @include mobile {
+            width: 100%;
         }
 
         ul {
             display: flex;
             justify-content: space-between;
             padding: 0;
-            li{
+
+            li {
                 list-style: none;
-                margin:5%;
+                margin: 5%;
             }
         }
     }

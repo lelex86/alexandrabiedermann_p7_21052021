@@ -26,7 +26,7 @@ exports.signup = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   User.searchByMail(req.body.email, (err, results) => {
-    if (results.length==0) {
+    if (results.length == 0) {
       console.log("Utilisateur non trouvé");
       return res.status(401).json({ error: "Utilisateur non trouvé !" });
     } else {
@@ -47,7 +47,7 @@ exports.login = (req, res, next) => {
                   expiresIn: "24h",
                 }
               ),
-              isAdmin: results[0].isAdmin
+              isAdmin: results[0].isAdmin,
             });
           }
         })
@@ -75,7 +75,7 @@ exports.modify = (req, res, next) => {
             if (err) {
               res.status(400).send(err);
             } else {
-              res.status(200).json(results);
+              res.status(200).json(newUser);
             }
           });
         })
@@ -106,7 +106,7 @@ exports.modify = (req, res, next) => {
       });
     }
   } else {
-    res.status(401).send({error: "Utilisateur non autorisé!"});
+    res.status(401).send({ error: "Utilisateur non autorisé!" });
   }
 };
 

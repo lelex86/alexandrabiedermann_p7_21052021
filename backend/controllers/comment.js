@@ -46,7 +46,6 @@ exports.deleteComment = (req, res, next) => {
       res.status(400).send(err);
     } else {
       const comment = results[0];
-      console.log(comment)
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
@@ -67,6 +66,16 @@ exports.deleteComment = (req, res, next) => {
 
 exports.getByArticle = (req, res, next) => {
   Comment.searchByArticle(req.params.article_id, (err, results) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+};
+
+exports.getById = (req, res, next) => {
+  Comment.searchById(req.params.id, (err, results) => {
     if (err) {
       res.status(400).send(err);
     } else {

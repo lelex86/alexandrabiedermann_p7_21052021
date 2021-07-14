@@ -1,10 +1,18 @@
 const db = require("../config/db");
+const sanitize = require("sanitize-html");
 
 class Comment {
   static create = (comment, callback) => {
     db.query(
       "INSERT INTO commentaires SET user_id=?, article_id=?, commentaire=?",
-      [comment.user_id, comment.article_id, comment.commentaire],
+      [
+        comment.user_id,
+        comment.article_id,
+        sanitize(comment.commentaire, {
+          allowedTags: [],
+          allowedAttributes: {},
+        }),
+      ],
       (error, result) => {
         callback(error, result);
       }
@@ -20,7 +28,13 @@ class Comment {
   static update = (comment, callback) => {
     db.query(
       "UPDATE commentaires SET commentaire=? WHERE id=?",
-      [comment.commentaire, comment.id],
+      [
+        sanitize(comment.commentaire, {
+          allowedTags: [],
+          allowedAttributes: {},
+        }),
+        comment.id,
+      ],
       (error, result) => {
         callback(error, result);
       }

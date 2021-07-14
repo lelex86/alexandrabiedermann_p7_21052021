@@ -6,9 +6,7 @@ exports.createArticle = (req, res, next) => {
   if (req.file) {
     const article = {
       ...req.body,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${
-        req.file.filename
-      }`,
+      imageUrl: `images/${req.file.filename}`,
     };
     Article.create(article, (err, results) => {
       if (err) {
@@ -60,13 +58,11 @@ exports.modifyArticle = (req, res, next) => {
         const userId = decodedToken.userId;
         if (userId == article.user_id) {
           if (article.imageUrl != null) {
-            const filename = article.imageUrl.split("/images/")[1];
+            const filename = article.imageUrl.split("images/")[1];
             fs.unlink(`images/${filename}`, () => {
               const articleObject = {
                 ...req.body,
-                imageUrl: `${req.protocol}://${req.get("host")}/images/${
-                  req.file.filename
-                }`,
+                imageUrl: `images/${req.file.filename}`,
                 id: req.params.id,
               };
               Article.update(articleObject, (err, results) => {
@@ -80,9 +76,7 @@ exports.modifyArticle = (req, res, next) => {
           } else {
             const articleObject = {
               ...req.body,
-              imageUrl: `${req.protocol}://${req.get("host")}/images/${
-                req.file.filename
-              }`,
+              imageUrl: `images/${req.file.filename}`,
               id: req.params.id,
             };
             Article.update(articleObject, (err, results) => {
@@ -94,7 +88,11 @@ exports.modifyArticle = (req, res, next) => {
             });
           }
         } else {
-          res.status(401).json({ error: "L'utilisateur n'a pas le droit de modifier cet article!" });
+          res
+            .status(401)
+            .json({
+              error: "L'utilisateur n'a pas le droit de modifier cet article!",
+            });
         }
       }
     });
@@ -109,7 +107,11 @@ exports.modifyArticle = (req, res, next) => {
         if (userId == req.body.user_id) {
           res.status(200).json(results);
         } else {
-          res.status(401).json({ error: "L'utilisateur n'a pas le droit de modifier cet article!" });
+          res
+            .status(401)
+            .json({
+              error: "L'utilisateur n'a pas le droit de modifier cet article!",
+            });
         }
       }
     });
@@ -126,7 +128,7 @@ exports.deleteArticle = (req, res, next) => {
       const userId = decodedToken.userId;
       if (userId == req.params.user_id || req.params.isAdmin == 1) {
         if (results[0].imageUrl != null) {
-          const filename = results[0].imageUrl.split("/images/")[1];
+          const filename = results[0].imageUrl.split("images/")[1];
           fs.unlink(`images/${filename}`, () => {
             Article.delete(req.params.id, (err, results) => {
               if (err) {
@@ -146,7 +148,11 @@ exports.deleteArticle = (req, res, next) => {
           });
         }
       } else {
-        res.status(401).json({ error: "L'utilisateur n'a pas le droit de supprimer cet article!" });
+        res
+          .status(401)
+          .json({
+            error: "L'utilisateur n'a pas le droit de supprimer cet article!",
+          });
       }
     }
   });
@@ -160,7 +166,7 @@ exports.deleteWithUser = (req, res, next) => {
     } else {
       for (let result of results) {
         if (result.imageUrl != null) {
-          const filename = result.imageUrl.split("/images/")[1];
+          const filename = result.imageUrl.split("images/")[1];
           fs.unlink(`images/${filename}`, () => {
             Article.delete(result.id, (err, results) => {
               if (err) {

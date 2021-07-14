@@ -1,3 +1,5 @@
+const url = "http://localhost:3000/";
+
 class View {
   /*********************************** Eléments utils dans plusieurs autres affichages ***********************************/
   static startHeader() {
@@ -50,7 +52,7 @@ class View {
         document.getElementById(
           "userButton" + comment.id
         ).innerHTML += /*html*/ `
-              <button  class="modify" type="submit" onclick="View.modifyComment('${comment.commentaire}', '${comment.id}'); return false"> Modifier </button>
+              <button  class="modify" type="submit" onclick="Controller.getCommentByID(${comment.id}); return false"> Modifier </button>
               `;
       }
     }
@@ -74,7 +76,7 @@ class View {
         document.getElementById(
           "userButton" + object.id
         ).innerHTML += /*html*/ `
-              <button type="submit" onclick="Controller.deleteComment('${object.id}')"> Supprimer </button>
+              <button type="submit" onclick="Controller.deleteComment(${object.id})"> Supprimer </button>
               `;
       }
     }
@@ -145,7 +147,7 @@ class View {
       <div class="customBoxContainer">
         <div class="backgroundBlur"></div>
         <div class="custom-box">
-          <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">
+          <input id="close" type="button" value="fermer" onclick="Controller.index(this); return false">
           <div id="scroll">
           <h1>Inscription</h1>
           <p>Afin de procéder à votre inscription, merci de remplir le formulaire ci-dessous</p>
@@ -203,7 +205,7 @@ class View {
       <div class="customBoxContainer">
         <div class="backgroundBlur"></div>
         <div class="custom-box">
-          <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">
+          <input id="close" type="button" value="fermer" onclick="Controller.index(this); return false">
           <h1>Connexion</h1>
           <p>Connectez-vous à l'aide de vos identifiants</p>
           <form
@@ -256,7 +258,7 @@ class View {
     }
     document.getElementById("main").innerHTML += /*html*/ `
         <aside id="aside">
-            <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">  
+            <input id="close" type="button" value="fermer" onclick="Controller.index(this); return false">  
             <h2>${user.name} ${user.firstname} </h2>
             <p>${user.email}</p>
             <div>
@@ -277,7 +279,7 @@ class View {
         <div class="customBoxContainer" id="modifyUser">
           <div class="backgroundBlur"></div>
           <div class="custom-box">
-            <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">
+            <input id="close" type="button" value="fermer" onclick="Controller.index(this); return false">
             <div id="scroll">
             <form
             id="formulaire"
@@ -355,7 +357,7 @@ class View {
               <option id="admin" value="1">1</option>
             </select>
       `;
-      if(user.isAdmin==1){
+      if (user.isAdmin == 1) {
         document.getElementById("admin").setAttribute("selected", "");
       }
       document
@@ -386,7 +388,6 @@ class View {
       `;
 
     for (let user of users) {
-      console.log("user"+user.id, user_id);
       document.getElementById("users").innerHTML += /*html*/ `
           <article>
             <div>
@@ -411,9 +412,9 @@ class View {
                     <form id="formulaire" onsubmit="Controller.savePost(this,${
                       article.id
                     }); return false">
-                        <input id="close" type="button" value="fermer" onclick="Controller.index(); return false">
+                        <input id="close" type="button" value="fermer" onclick="Controller.index(this); return false">
                         <input type="hidden" name="user_id" value="${localStorage.getItem(
-                          'userId'
+                          "userId"
                         )}">
                         <input type="hidden" name="id" value="${article.id}">
                     <label for="title">Titre</label>
@@ -422,7 +423,7 @@ class View {
                         name="title"
                         id="title"
                         value="${article.title}"
-                        pattern="[A-ZÀ-ÿa-z0-9\\s-]{2,100}"
+                        pattern="[A-ZÀ-ÿa-z0-9\\s-']{2,100}"
                         placeholder="Titre"
                         required
                     />
@@ -456,7 +457,7 @@ class View {
     if (image.length == 0) {
       if (article.imageUrl) {
         document.getElementById("imgPreview").innerHTML = /*html*/ `
-                <img src="${article.imageUrl}" alt="Image séléctionnée pour votre article">
+                <img src="${url}${article.imageUrl}" alt="Image séléctionnée pour votre article">
                 `;
       } else {
         document.getElementById("imgPreview").innerHTML = /*html*/ `
@@ -490,9 +491,9 @@ class View {
                     <p class="author">Par ${article.firstname} ${
         article.name
       } ${Controller.getTimeLaps(article.created_at)} </p>
-                    <p><img src="${
-                      article.imageUrl
-                    }" alt="Image illustrant l'article ${article.title}"></p>
+                    <p><img src="${url}${
+        article.imageUrl
+      }" alt="Image illustrant l'article ${article.title}"></p>
                     <p class="extrait">${article.body}</p>
                 </article>
             </a>
@@ -533,9 +534,9 @@ class View {
                     <p class="author">Par ${article.firstname} ${
         article.name
       } ${Controller.getTimeLaps(article.created_at)} </p>
-                    <p><img src="${
-                      article.imageUrl
-                    }" alt="Image illustrant l'article ${article.title}"></p>
+                    <p><img src="${url}${
+        article.imageUrl
+      }" alt="Image illustrant l'article ${article.title}"></p>
                     <p class="extrait">${article.body}</p>
                 </article>
             </a>
@@ -560,12 +561,10 @@ class View {
                       </div>
                       <article class="article">
                           <h2>${article.title}</h2>
-                          <a href="${article.imageUrl}" target="_blank">
-                              <img src="${
-                                article.imageUrl
-                              }" alt="Image illustrant l'article ${
-      article.title
-    }"/>
+                          <a href="${url}${article.imageUrl}" target="_blank">
+                              <img src="${url}${
+      article.imageUrl
+    }" alt="Image illustrant l'article ${article.title}"/>
                           </a>
                           <p>${text}</p>
                       </article>
@@ -623,7 +622,7 @@ class View {
             <a href="index.html?id=${article.id}">
                 <article>
                   <h2>${article.title}</h2>
-                  <p><img src="${article.imageUrl}" alt="Image illustrant l'article ${article.title}"></p>
+                  <p><img src="${url}${article.imageUrl}" alt="Image illustrant l'article ${article.title}"></p>
                   <p class="extrait">${text}</p>
                 </article>
             </a>
@@ -680,9 +679,11 @@ class View {
             </div>
 
         `;
-      if(comment.user_id==localStorage.getItem("userId")){
-        document.getElementById("scroll").removeChild(document.getElementById("formulaire"));
-      }  
+      if (comment.user_id == localStorage.getItem("userId")) {
+        document
+          .getElementById("scroll")
+          .removeChild(document.getElementById("formulaire"));
+      }
       if (
         localStorage.getItem("isAdmin") &&
         document.getElementById("comments" + comment.id)
@@ -712,7 +713,7 @@ class View {
           <h3> Commentaire sur l'article:</h3>
             <a href="index.html?id=${comment.article_id}">
               <p> ${comment.title}</p>
-              <p><img src="${comment.imageUrl}" alt="Image illustrant l'article ${comment.title}"></p> 
+              <p><img src="${url}${comment.imageUrl}" alt="Image illustrant l'article ${comment.title}"></p> 
             </a>
             <div>
               <p>${comment.commentaire}</p>
@@ -726,17 +727,16 @@ class View {
     }
   }
 
-  static modifyComment(comment, id) {
-    console.log(comment);
+  modifyComment(comment) {
     document.body.innerHTML += /*html*/ `
             <div class="customBoxContainer">
                 <div class="backgroundBlur"></div>
                 <div class="custom-box modifyComment" >
                     <input id="close" type="button" value="fermer" onclick="window.location.replace('index.html')">
                     <form methode="post" id="formulaire" class="comment" onsubmit="Controller.modifyComment(this); return false;">
-                        <input type="hidden" name="id" value="${id}"/>
+                        <input type="hidden" name="id" value="${comment.id}"/>
                         <label for="commentaire">Modifiez votre commentaire</label>
-                        <input type="text" name="commentaire" id="commentaire" value="${comment}"/>
+                        <input type="text" name="commentaire" id="commentaire" value="${comment.commentaire}"/>
                         <button type="submit" aria-label="Bouton permettant d'envoyer le commentaire modifié."><i class="far fa-paper-plane"></i></button>
                     </form>
                 </div>

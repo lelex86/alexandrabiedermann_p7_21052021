@@ -1,7 +1,6 @@
 /*********************************** Contantes réutilisées à de nombreuses reprises ***********************************/
 
 const urlServer = "http://localhost:3000/api/";
-const user_id = localStorage.getItem("userId");
 const article_id = new URLSearchParams(window.location.search).get("id");
 
 class Controller {
@@ -153,7 +152,8 @@ class Controller {
   }
 
   static deleteUser() {
-    let url = urlServer + "user/" + user_id +"/"+ Controller.isAdmin();
+    const user_id = localStorage.getItem("userId");
+    let url = urlServer + "user/" + user_id + "/" + Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -169,9 +169,8 @@ class Controller {
   }
 
   static deleteUserByAdmin(userId) {
-    console.log("user", userId, "id", user_id);
-    console.log("condition", userId==user_id);
-    let url = urlServer + "user/" + userId + "/"+ Controller.isAdmin();
+    const user_id = localStorage.getItem("userId");
+    let url = urlServer + "user/" + userId + "/" + Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -191,6 +190,7 @@ class Controller {
   }
 
   static showProfil() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "user/" + user_id;
     let user = Model.get(url)
       .then(function (response) {
@@ -211,6 +211,7 @@ class Controller {
   }
 
   static getUser() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "user/" + user_id;
     let user = Model.get(url)
       .then(function (response) {
@@ -250,7 +251,7 @@ class Controller {
       });
   }
 
-  static getAllUsers(userId) {
+  static getAllUsers() {
     let url = urlServer + "user/";
     Model.get(url)
       .then(function (response) {
@@ -320,6 +321,7 @@ class Controller {
   }
 
   static getArticlesByUser() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "articles/user/" + user_id;
     let article = Model.get(url)
       .then(function (response) {
@@ -379,7 +381,15 @@ class Controller {
   }
 
   static deleteArticle() {
-    let url = urlServer + "articles/" + article_id + "/" + user_id + "/"+ Controller.isAdmin();
+    const user_id = localStorage.getItem("userId");
+    let url =
+      urlServer +
+      "articles/" +
+      article_id +
+      "/" +
+      user_id +
+      "/" +
+      Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -401,6 +411,7 @@ class Controller {
   /*********************************** Méthodes gérants les commentaires ***********************************/
 
   static sendComment() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "comment";
     let formulaire = document.getElementById("formulaire");
     let data = new FormData(formulaire);
@@ -429,7 +440,7 @@ class Controller {
   }
 
   static getComment() {
-    let url = urlServer + "comment/" + article_id;
+    let url = urlServer + "comment/article/" + article_id;
     let comments = Model.get(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -449,6 +460,7 @@ class Controller {
   }
 
   static getCommentByUser() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "comment/user/" + user_id;
     let comments = Model.get(url)
       .then(function (response) {
@@ -468,7 +480,28 @@ class Controller {
       });
   }
 
+  static getCommentByID(id) {
+    let url = urlServer + "comment/" + id;
+    let comments = Model.get(url)
+      .then(function (response) {
+        console.log("Connexion à l'API réussie!");
+        let view = new View();
+        view.modifyComment(JSON.parse(response)[0]);
+      })
+      .catch(function (error) {
+        console.error("Échec connexion API. Erreur=", error);
+        if (error.status == 401) {
+          localStorage.clear();
+          Controller.index();
+        } else {
+          let view = new View();
+          view.errorPage(error);
+        }
+      });
+  }
+
   static modifyComment() {
+    const user_id = localStorage.getItem("userId");
     let formulaire = document.getElementById("formulaire");
     let data = new FormData(formulaire);
     let comment = Controller.getFormData(data);
@@ -491,7 +524,6 @@ class Controller {
   }
 
   static deleteComment(id) {
-    console.log(id);
     let url = urlServer + "comment/" + id + "/" + Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
@@ -515,6 +547,7 @@ class Controller {
   /*********************************** Méthodes gérant les likes ***********************************/
 
   static like() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "like/like";
     let newLike = {
       user_id: user_id,
@@ -540,6 +573,7 @@ class Controller {
       });
   }
   static dislike() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "like/dislike";
     let newDislike = {
       user_id: user_id,
@@ -566,6 +600,7 @@ class Controller {
   }
 
   static undoLike() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "like/undo/" + user_id + "/" + article_id;
     Model.delete(url)
       .then(function (response) {
@@ -638,6 +673,7 @@ class Controller {
   }
 
   static getLikeByUser() {
+    const user_id = localStorage.getItem("userId");
     let url = urlServer + "like/user/" + user_id;
     let likes = Model.get(url)
       .then(function (response) {

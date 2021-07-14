@@ -1,10 +1,15 @@
 const db = require("../config/db");
-
+const sanitize = require("sanitize-html");
 class Article {
   static create = (article, callback) => {
     db.query(
       "INSERT INTO articles SET title=?, body=?, imageUrl=?, user_id=?",
-      [article.title, article.body, article.imageUrl, article.user_id],
+      [
+        sanitize(article.title, { allowedTags: [], allowedAttributes: {} }),
+        sanitize(article.body, { allowedTags: [], allowedAttributes: {} }),
+        article.imageUrl,
+        article.user_id,
+      ],
       (error, result) => {
         callback(error, result);
       }
@@ -36,8 +41,8 @@ class Article {
       db.query(
         "UPDATE articles SET title=?, body=?, imageUrl=?, user_id=? WHERE id=?",
         [
-          article.title,
-          article.body,
+          sanitize(article.title, { allowedTags: [], allowedAttributes: {} }),
+          sanitize(article.body, { allowedTags: [], allowedAttributes: {} }),
           article.imageUrl,
           article.user_id,
           article.id,
@@ -49,7 +54,12 @@ class Article {
     } else {
       db.query(
         "UPDATE articles SET title=?, body=?, user_id=? WHERE id=?",
-        [article.title, article.body, article.user_id, article.id],
+        [
+          sanitize(article.title, { allowedTags: [], allowedAttributes: {} }),
+          sanitize(article.body, { allowedTags: [], allowedAttributes: {} }),
+          article.user_id,
+          article.id,
+        ],
         (error, result) => {
           callback(error, result);
         }

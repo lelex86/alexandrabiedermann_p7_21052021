@@ -1,16 +1,19 @@
-a{
+a {
     text-decoration: none;
-    color:black;
-    i{
-        color:$color-primary;
+    color: black;
+
+    i {
+        color: $color-primary;
     }
 }
 
-p{
+p {
     white-space: auto;
 }
 
-h1,h2,h3{
+h1,
+h2,
+h3 {
     text-align: center;
     width: 100%;
 }
