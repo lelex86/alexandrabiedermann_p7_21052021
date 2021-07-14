@@ -153,7 +153,7 @@ class Controller {
   }
 
   static deleteUser() {
-    let url = urlServer + "user/" + user_id + Controller.isAdmin();
+    let url = urlServer + "user/" + user_id +"/"+ Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -169,12 +169,14 @@ class Controller {
   }
 
   static deleteUserByAdmin(userId) {
-    let url = urlServer + "user/" + userId + Controller.isAdmin();
+    console.log("user", userId, "id", user_id);
+    console.log("condition", userId==user_id);
+    let url = urlServer + "user/" + userId + "/"+ Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
         console.log("Utilisateur supprimé!");
-        if ((userId = user_id)) {
+        if (userId == user_id) {
           localStorage.clear();
           Controller.index();
         } else {
@@ -250,7 +252,7 @@ class Controller {
 
   static getAllUsers(userId) {
     let url = urlServer + "user/";
-    let user = Model.get(url)
+    Model.get(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
         let view = new View();
@@ -377,7 +379,7 @@ class Controller {
   }
 
   static deleteArticle() {
-    let url = urlServer + "articles/" + article_id;
+    let url = urlServer + "articles/" + article_id + "/" + user_id + "/"+ Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");
@@ -489,7 +491,8 @@ class Controller {
   }
 
   static deleteComment(id) {
-    let url = urlServer + "comment/" + id + Controller.isAdmin();
+    console.log(id);
+    let url = urlServer + "comment/" + id + "/" + Controller.isAdmin();
     Model.delete(url)
       .then(function (response) {
         console.log("Connexion à l'API réussie!");

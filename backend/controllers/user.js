@@ -26,7 +26,7 @@ exports.signup = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   User.searchByMail(req.body.email, (err, results) => {
-    if (/* req.body.email != results[0].email|| */results.length==0) {
+    if (results.length==0) {
       console.log("Utilisateur non trouvé");
       return res.status(401).json({ error: "Utilisateur non trouvé !" });
     } else {
@@ -97,7 +97,7 @@ exports.modify = (req, res, next) => {
           };
           User.update(newUser, (err, results) => {
             if (err) {
-              res.status(400).send(err);
+              res.status(500).send(err);
             } else {
               res.status(200).json(newUser);
             }

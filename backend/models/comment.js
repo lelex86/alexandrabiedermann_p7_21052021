@@ -45,7 +45,7 @@ class Comment {
 
   static searchByArticle = (article_id, callback) => {
     db.query(
-      "SELECT commentaires.*, users.* FROM commentaires, users WHERE commentaires.article_id=? AND users.id=commentaires.user_id",
+      "SELECT commentaires.*, users.name, users.firstname FROM commentaires, users WHERE commentaires.article_id=? AND users.id=commentaires.user_id",
       article_id,
       (error, result) => {
         callback(error, result);

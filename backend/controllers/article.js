@@ -71,7 +71,7 @@ exports.modifyArticle = (req, res, next) => {
               };
               Article.update(articleObject, (err, results) => {
                 if (err) {
-                  res.status(400).send(err);
+                  res.status(500).send(err);
                 } else {
                   res.status(200).json(results);
                 }
@@ -87,7 +87,7 @@ exports.modifyArticle = (req, res, next) => {
             };
             Article.update(articleObject, (err, results) => {
               if (err) {
-                res.status(400).send(err);
+                res.status(500).send(err);
               } else {
                 res.status(200).json(results);
               }
@@ -101,7 +101,7 @@ exports.modifyArticle = (req, res, next) => {
   } else {
     Article.update(req.body, (err, results) => {
       if (err) {
-        res.status(400).send(err);
+        res.status(500).send(err);
       } else {
         const token = req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
@@ -125,12 +125,12 @@ exports.deleteArticle = (req, res, next) => {
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
       if (userId == req.params.user_id || req.params.isAdmin == 1) {
-        if (article.imageUrl != null) {
-          const filename = article.imageUrl.split("/images/")[1];
+        if (results[0].imageUrl != null) {
+          const filename = results[0].imageUrl.split("/images/")[1];
           fs.unlink(`images/${filename}`, () => {
             Article.delete(req.params.id, (err, results) => {
               if (err) {
-                res.status(400).send(err);
+                res.status(500).send(err);
               } else {
                 res.status(200).json(results);
               }
@@ -139,7 +139,7 @@ exports.deleteArticle = (req, res, next) => {
         } else {
           Article.delete(req.params.id, (err, results) => {
             if (err) {
-              res.status(400).send(err);
+              res.status(500).send(err);
             } else {
               res.status(200).json(results);
             }

@@ -33,7 +33,7 @@ class Like {
 
   static searchLikeByUser = (user_id, callback) => {
     db.query(
-      "SELECT articles.* FROM likes, articles WHERE likes.user_id=? AND articles.id=likes.article_id",
+      "SELECT articles.*, users.name, users.firstname FROM likes, articles, users WHERE likes.user_id=? AND articles.id=likes.article_id AND users.id=articles.user_id",
       user_id,
       (error, result) => {
         callback(error, result);

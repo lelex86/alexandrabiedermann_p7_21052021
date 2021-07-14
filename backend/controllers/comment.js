@@ -28,7 +28,7 @@ exports.modifyComment = (req, res, next) => {
         };
         Comment.update(commentObject, (err, results) => {
           if (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
           } else {
             res.status(200).json(results);
           }
@@ -46,13 +46,14 @@ exports.deleteComment = (req, res, next) => {
       res.status(400).send(err);
     } else {
       const comment = results[0];
+      console.log(comment)
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       const userId = decodedToken.userId;
       if (userId == comment.user_id || req.params.isAdmin == 1) {
         Comment.delete(req.params.id, (err, results) => {
           if (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
           } else {
             res.status(200).json(results);
           }

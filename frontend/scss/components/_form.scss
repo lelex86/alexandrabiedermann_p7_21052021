@@ -1,3 +1,20 @@
+/* input:valid {
+    border: 2px green solid;
+    background-image: url(../img/icon_check.svg) !important;
+    background-size: 1rem 1rem;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+input:invalid {
+    border: 2px red solid;
+    background-image: url(../img/icon_cross.svg);
+    background-size: 1rem 1rem;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+ */
 #formulaire {
     width: 100%;
     display: flex;
@@ -16,7 +33,7 @@
             width: 50%;
         }
         button{
-            width: 15%;
+            width: 15%;  
         }
     }
 

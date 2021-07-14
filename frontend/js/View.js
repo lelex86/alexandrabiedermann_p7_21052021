@@ -112,17 +112,17 @@ class View {
                   <h2>Oups!</h2>
                   <p><i class="fas fa-exclamation-triangle"></i></p>
                   <p>L'erreur suivante s'est produite: 
-                  <br><br><span></span><br><br> 
+                  <br><br><span>${error}</span><br><br> 
                   Veuillez réessayer ou contacter votre administrateur réseau.
                   </p>
                   <button type="submit" onclick="Controller.index(this); return false"> Retour à l'accueil </button>
                 </div>
     
     `;
-    if(error.responseText){
-      document.querySelector("span").innerHTML= error.responseText;
-    }else{
-      document.querySelector("span").innerHTML= error;
+    if (error.responseText) {
+      document.querySelector("span").innerHTML = error.responseText;
+    } else {
+      document.querySelector("span").innerHTML = error;
     }
   }
 
@@ -186,7 +186,7 @@ class View {
               id="password"
               type="password"
               name="password"
-              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$"
               placeholder="Mot de passe"
               required
             />
@@ -292,8 +292,8 @@ class View {
             <input
               type="hidden"
               name="isAdmin"
+              id="isAdmin"
               pattern="[A-ZÀ-ÿa-z\\s-]{2,100}"
-              placeholder="Nom"
               value="${user.isAdmin}"
             />
             <label for="name">Nom:</label>
@@ -352,20 +352,23 @@ class View {
               id="isAdmin"
             >
               <option value="0">0</option>
-              <option value="1">1</option>
+              <option id="admin" value="1">1</option>
             </select>
       `;
+      if(user.isAdmin==1){
+        document.getElementById("admin").setAttribute("selected", "");
+      }
       document
         .getElementById("formulaire")
         .insertBefore(
-          document.getElementById("admin"),
+          document.getElementById("isAdmin"),
           document.getElementById("button")
         );
       document
         .getElementById("formulaire")
         .insertBefore(
           document.getElementById("adminLabel"),
-          document.getElementById("admin")
+          document.getElementById("isAdmin")
         );
     }
   }
@@ -383,6 +386,7 @@ class View {
       `;
 
     for (let user of users) {
+      console.log("user"+user.id, user_id);
       document.getElementById("users").innerHTML += /*html*/ `
           <article>
             <div>
@@ -434,7 +438,7 @@ class View {
                         id="image"
                         type="file"
                         name="image"
-                        accept="image/.png, image/.jpg, image/.jpeg"
+                        accept=".png, .jpg, .jpeg"
                         placeholder="insérer une image"
                     />
                     <div>
@@ -497,27 +501,27 @@ class View {
   }
 
   showArticlesByLike(articles) {
-    if(document.getElementById("articles")){
+    if (document.getElementById("articles")) {
       while (document.getElementById("articles").firstChild) {
         document
           .getElementById("articles")
           .removeChild(document.getElementById("articles").firstChild);
       }
     }
-    if(document.getElementById("comment")){
+    if (document.getElementById("comment")) {
       while (document.getElementById("comment").firstChild) {
         document
           .getElementById("comment")
           .removeChild(document.getElementById("comment").firstChild);
       }
     }
-    if(document.getElementById("backHome")){
+    if (document.getElementById("backHome")) {
       document.body.removeChild(document.getElementById("backHome"));
     }
-    document.getElementById("main").innerHTML+=/*html*/ `
+    document.getElementById("main").innerHTML += /*html*/ `
         <section id="articles">
         </section>
-      `
+      `;
     document
       .getElementById("main")
       .removeChild(document.getElementById("aside"));
@@ -589,30 +593,30 @@ class View {
   }
 
   showArticlesByUser(articles) {
-    if(document.getElementById("articles")){
+    if (document.getElementById("articles")) {
       while (document.getElementById("articles").firstChild) {
         document
           .getElementById("articles")
           .removeChild(document.getElementById("articles").firstChild);
       }
     }
-    if(document.getElementById("comment")){
+    if (document.getElementById("comment")) {
       while (document.getElementById("comment").firstChild) {
         document
           .getElementById("comment")
           .removeChild(document.getElementById("comment").firstChild);
       }
     }
-    if(document.getElementById("backHome")){
+    if (document.getElementById("backHome")) {
       document.body.removeChild(document.getElementById("backHome"));
     }
     document
       .getElementById("main")
       .removeChild(document.getElementById("aside"));
-      document.getElementById("main").innerHTML+=/*html*/ `
+    document.getElementById("main").innerHTML += /*html*/ `
         <section id="articles">
         </section>
-      `
+      `;
     for (let article of articles) {
       let text = article.body.replace("\r\n", "<br>");
       document.getElementById("articles").innerHTML += /*html*/ `
@@ -676,13 +680,17 @@ class View {
             </div>
 
         `;
-    }
-
-    if (localStorage.getItem("isAdmin")) {
-      document.getElementById("comments${comment.id}").innerHTML += /*html*/ `
-        <button type="submit" onclick="Controller.deleteComment(${comment.id})" aria-label="Bouton permettant de supprimer le commentaire."><i class="fas fa-trash-alt"></i></button>
-
-      `;
+      if(comment.user_id==localStorage.getItem("userId")){
+        document.getElementById("scroll").removeChild(document.getElementById("formulaire"));
+      }  
+      if (
+        localStorage.getItem("isAdmin") &&
+        document.getElementById("comments" + comment.id)
+      ) {
+        document.getElementById("comments" + comment.id).innerHTML += /*html*/ `
+          <button type="submit" onclick="Controller.deleteComment(${comment.id})" aria-label="Bouton permettant de supprimer le commentaire."><i class="fas fa-trash-alt"></i></button>
+        `;
+      }
     }
   }
 
@@ -719,6 +727,7 @@ class View {
   }
 
   static modifyComment(comment, id) {
+    console.log(comment);
     document.body.innerHTML += /*html*/ `
             <div class="customBoxContainer">
                 <div class="backgroundBlur"></div>
@@ -727,7 +736,7 @@ class View {
                     <form methode="post" id="formulaire" class="comment" onsubmit="Controller.modifyComment(this); return false;">
                         <input type="hidden" name="id" value="${id}"/>
                         <label for="commentaire">Modifiez votre commentaire</label>
-                        <input type="text" name="commentaire" id="commentaire" value="'${comment}'"/>
+                        <input type="text" name="commentaire" id="commentaire" value="${comment}"/>
                         <button type="submit" aria-label="Bouton permettant d'envoyer le commentaire modifié."><i class="far fa-paper-plane"></i></button>
                     </form>
                 </div>

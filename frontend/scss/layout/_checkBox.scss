@@ -78,11 +78,18 @@
                 
             }
             .comments{
-                flex-direction: column;
-                justify-content: flex-start;
+                justify-content: center;
+                align-items: center;
                 margin:0;
                 p{
                     margin: 0;
+                    &:first-child{
+                        width: 100%;
+                    }
+                }
+                button{
+                    margin: 4px;
+                    padding: 5px 10px;
                 }
             }
 
